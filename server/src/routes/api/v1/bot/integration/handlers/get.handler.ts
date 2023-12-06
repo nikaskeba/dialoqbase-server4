@@ -6,12 +6,12 @@ export async function getChannelsByProvider(
   reply: FastifyReply,
 ) {
   const { id } = request.params;
-  console.log("bot id", id);
   const prisma = request.server.prisma;
 
-  const bot = await prisma.bot.findUnique({
+  const bot = await prisma.bot.findFirst({
     where: {
       id,
+      user_id: request.user.user_id,
     },
   });
 
@@ -102,6 +102,29 @@ export async function getChannelsByProvider(
           requiredMessage: "Slash command description is required",
           value: "Use this command to send messages to the bot",
           defaultValue: "Use this command to send messages to the bot",
+        },
+        {
+          name: "discord_show_sources",
+          type: "boolean",
+          inputType: "boolean",
+          title: "Show URL sources",
+          description: "Show sources in Discord command",
+          help: "Show sources in Discord command",
+          requiredMessage: "",
+          value: false,
+          defaultValue: false,
+        },
+        {
+          name: "discord_smart_label",
+          type: "string",
+          inputType: "boolean",
+          title: `Smart Source Label\n("https://en.wikipedia.org/wiki/Linux_kernel" => "Linux Kernel")`,
+          description:
+            "Let the system try to find a smart title for every source",
+          help: "Let the system try to find a smart title for every source",
+          requiredMessage: "",
+          value: false,
+          defaultValue: false,
         },
       ],
       isPaused: false,

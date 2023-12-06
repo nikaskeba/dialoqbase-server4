@@ -20,6 +20,12 @@ import { ConfigProvider } from "antd";
 import { StyleProvider } from "@ant-design/cssinjs";
 import BotPlaygroundLayout from "./Layout/BotPlaygroundLayout";
 import BotConversationsRoot from "./routes/bot/conversations";
+import RegisterRoot from "./routes/register";
+import { QueryBoundaries } from "./components/Common/QueryBoundaries";
+import SettingsApplicationRoot from "./routes/settings/application";
+import SettingsTeamsRoot from "./routes/settings/teams";
+import BotIntegrationAPIRoot from "./routes/bot/api";
+import SettingsModelRoot from "./routes/settings/model";
 
 const router = createHashRouter([
   {
@@ -103,6 +109,14 @@ const router = createHashRouter([
     ),
   },
   {
+    path: "/bot/:id/integrations/api",
+    element: (
+      <BotLayout>
+        <BotIntegrationAPIRoot />
+      </BotLayout>
+    ),
+  },
+  {
     path: "/bot/:id/appearance",
     element: (
       <BotLayout>
@@ -118,12 +132,48 @@ const router = createHashRouter([
     path: "/settings",
     element: (
       <DashboardLayout>
-        <SettingsRoot />
+        <QueryBoundaries>
+          <SettingsRoot />
+        </QueryBoundaries>
       </DashboardLayout>
     ),
   },
+  {
+    path: "/settings/application",
+    element: (
+      <DashboardLayout>
+        <QueryBoundaries>
+          <SettingsApplicationRoot />
+        </QueryBoundaries>
+      </DashboardLayout>
+    ),
+  },
+  {
+    path: "/settings/teams",
+    element: (
+      <DashboardLayout>
+        <QueryBoundaries>
+          <SettingsTeamsRoot />
+        </QueryBoundaries>
+      </DashboardLayout>
+    ),
+  },
+  {
+    path: "/settings/model",
+    element: (
+      <DashboardLayout>
+        <QueryBoundaries>
+          <SettingsModelRoot />
+        </QueryBoundaries>
+      </DashboardLayout>
+    ),
+  },
+  {
+    path: "/register",
+    element: <RegisterRoot />,
+  },
 ]);
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({});
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <ConfigProvider theme={{}}>

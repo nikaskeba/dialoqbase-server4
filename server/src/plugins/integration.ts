@@ -7,7 +7,7 @@ import WhatsappBot from "../integration/whatsapp";
 // import SlackBot from "../integration/slack";
 
 const integrationPlugin: FastifyPluginAsync = fp(async (server, options) => {
-  console.log("Connecting pm2...");
+  console.log("Connecting integration...");
   const prisma = new PrismaClient();
   const pendingProcess = await prisma.botIntegration.findMany({
     where: {
@@ -31,6 +31,8 @@ const integrationPlugin: FastifyPluginAsync = fp(async (server, options) => {
         process.discord_bot_token!,
         process.discord_slash_command!,
         process.discord_slash_command_description!,
+        process.discord_show_sources!,
+        process.discord_smart_label!,
       );
     } else if (process.provider === "whatsapp") {
       await WhatsappBot.connect(
@@ -39,7 +41,7 @@ const integrationPlugin: FastifyPluginAsync = fp(async (server, options) => {
         process.whatsapp_access_token!,
       )
     }
-    
+
     // else if (process.provider === "slack") {
     //   await SlackBot.connect(
     //     process.identifier,

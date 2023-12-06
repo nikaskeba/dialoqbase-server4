@@ -13,6 +13,8 @@ model Bot {
   id                          String           @id @default(cuid())
   publicId                    String           @unique @default(uuid())
   name                        String
+  user_id                     Int?
+  User                        User?            @relation(fields: [user_id], references: [user_id])
   description                 String?
   createdAt                   DateTime         @default(now())
   temperature                 Float            @default(0.7)
@@ -27,6 +29,13 @@ model Bot {
   text_to_voice_enabled       Boolean          @default(false)
   text_to_voice_type          String           @default("web_api")
   text_to_voice_type_metadata Json             @default("{}") @db.Json
+  use_hybrid_search           Boolean          @default(false)
+  haveDataSourcesBeenAdded    Boolean          @default(false)
+  use_rag                     Boolean          @default(false)
+  bot_protect                 Boolean          @default(false)
+  bot_api_key                 String?
+  bot_model_api_key           String?
+  options                     Json?            @default("{}") @db.Json
   BotAppearance               BotAppearance[]
   document                    BotDocument[]
   BotIntegration              BotIntegration[]
@@ -61,10 +70,21 @@ model BotDocument {
 }
 
 model User {
-  user_id      Int     @id @default(autoincrement())
-  username     String
-  password     String
-  isFirstLogin Boolean @default(true)
+  user_id         Int      @id @default(autoincrement())
+  username        String   @unique
+  password        String
+  email           String?  @unique
+  isFirstLogin    Boolean  @default(true)
+  isAdministrator Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  bots            Bot[]
+}
+
+model DialoqbaseSettings {
+  id                    Int     @id @default(autoincrement())
+  noOfBotsPerUser       Int     @default(10)
+  allowUserToCreateBots Boolean @default(true)
+  allowUserToRegister   Boolean @default(false)
 }
 
 model BotIntegration {
@@ -79,6 +99,8 @@ model BotIntegration {
   discord_slash_command_description String?  @default("Use this command to get help")
   discord_application_id            String?
   whatsapp_access_token             String?
+  discord_show_sources              Boolean? @default(false)
+  discord_smart_label               Boolean? @default(false)
   whatsapp_verify_token             String?
   whatsapp_phone_number             String?
   slack_auth_token                  String?
@@ -88,11 +110,12 @@ model BotIntegration {
 }
 
 model BotTelegramHistory {
-  id         Int     @id @default(autoincrement())
-  chat_id    Int?
-  identifier String?
-  human      String?
-  bot        String?
+  id          Int     @id @default(autoincrement())
+  chat_id     Int?
+  new_chat_id String?
+  identifier  String?
+  human       String?
+  bot         String?
 }
 
 model BotDiscordHistory {
@@ -152,4 +175,18 @@ model botWebHistory {
   human     String?
   bot       String?
   createdAt DateTime @default(now())
+}
+
+model DialoqbaseModels {
+  id               Int      @id @default(autoincrement())
+  name             String?
+  model_id         String   @unique
+  model_type       String   @default("chat")
+  stream_available Boolean  @default(false)
+  model_provider   String?
+  local_model      Boolean  @default(false)
+  config           Json     @default("{}") @db.Json
+  hide             Boolean  @default(false)
+  deleted          Boolean  @default(false)
+  createdAt        DateTime @default(now())
 }
